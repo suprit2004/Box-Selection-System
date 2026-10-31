@@ -27,8 +27,7 @@
         <div class="card p-3 h-100">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Catalog
-                        Products</span>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Catalog Products</span>
                     <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ total_products }}</h2>
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2">
                         {{ active_products }} active for shipping
@@ -46,8 +45,7 @@
         <div class="card p-3 h-100">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Shipping
-                        Boxes</span>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Shipping Boxes</span>
                     <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ total_boxes }}</h2>
                     <span class="badge bg-success-subtle text-success border border-success-subtle mt-2">
                         {{ active_boxes }} in inventory
@@ -141,8 +139,7 @@
                                 <td>
                                     {% if order.recommended_box %}
                                     <span class="fw-semibold text-dark">{{ order.recommended_box.name }}</span>
-                                    <span class="badge bg-secondary-subtle text-secondary font-monospace ms-1">{{
-                                        order.recommended_box.code }}</span>
+                                    <span class="badge bg-secondary-subtle text-secondary font-monospace ms-1">{{ order.recommended_box.code }}</span>
                                     {% else %}
                                     <span class="text-muted fst-italic">None (Split needed)</span>
                                     {% endif %}
@@ -197,8 +194,7 @@
                         <div>
                             <div class="fw-semibold text-dark">{{ box.name }}</div>
                             <div class="text-muted small">
-                                {{ box.internal_length }}×{{ box.internal_width }}×{{ box.internal_height }} cm • Max {{
-                                box.max_weight }} kg
+                                {{ box.internal_length }}×{{ box.internal_width }}×{{ box.internal_height }} cm • Max {{ box.max_weight }} kg
                             </div>
                         </div>
                         <div class="text-end">
