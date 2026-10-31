@@ -120,7 +120,7 @@ class FullPageSmokeTest(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertContains(r, "Box Recommended")
         self.assertContains(r, "Smoke Test Box")
-        self.assertContains(r, "$3.00")
+        self.assertContains(r, "₹3.00")
         self.assertContains(r, "Reason for Selection")
         self.assertContains(r, "3D Coordinate Placement")
 

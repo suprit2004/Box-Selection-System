@@ -7,7 +7,7 @@ from fulfillment.services.packing_engine import ItemCuboid
 
 class BoxSelectorServiceTest(TestCase):
     def setUp(self):
-        # Box A: Small & Cheap ($1.50, max 3 kg)
+        # Box A: Small & Cheap (₹1.50, max 3 kg)
         self.box_small = ShippingBox.objects.create(
             code="BOX-SM",
             name="Small Box",
@@ -17,7 +17,7 @@ class BoxSelectorServiceTest(TestCase):
             max_weight=Decimal("3.000"),
             cost=Decimal("1.50")
         )
-        # Box B: Medium & Mid-Price ($2.50, max 10 kg)
+        # Box B: Medium & Mid-Price (₹2.50, max 10 kg)
         self.box_medium = ShippingBox.objects.create(
             code="BOX-MD",
             name="Medium Box",
@@ -27,7 +27,7 @@ class BoxSelectorServiceTest(TestCase):
             max_weight=Decimal("10.000"),
             cost=Decimal("2.50")
         )
-        # Box C: Large & Expensive ($4.00, max 20 kg)
+        # Box C: Large & Expensive (₹4.00, max 20 kg)
         self.box_large = ShippingBox.objects.create(
             code="BOX-LG",
             name="Large Box",
@@ -57,8 +57,8 @@ class BoxSelectorServiceTest(TestCase):
 
     def test_cheapest_feasible_box_selected(self):
         # 1 Textbook (22x14x4 cm) exceeds Small Box (length 20 cm).
-        # Both Medium ($2.50) and Large ($4.00) can fit it.
-        # System must select Medium because it is cheaper ($2.50 < $4.00).
+        # Both Medium (₹2.50) and Large (₹4.00) can fit it.
+        # System must select Medium because it is cheaper (₹2.50 < ₹4.00).
         item = ItemCuboid(sku="BOOK-1", length=Decimal("22.00"), width=Decimal("14.00"), height=Decimal("4.00"), weight=Decimal("1.200"))
         result = BoxSelectorService.select_box_for_items([(item, 1)])
 
@@ -92,7 +92,7 @@ class BoxSelectorServiceTest(TestCase):
         self.assertIn("Oversized Item", result.reason)
 
     def test_tie_breaker_minimum_void_volume(self):
-        # Create an alternative box with same cost ($2.50) but larger internal volume
+        # Create an alternative box with same cost (₹2.50) but larger internal volume
         # Medium box volume: 30 * 20 * 15 = 9000 cm³
         # Alt box volume: 32 * 20 * 15 = 9600 cm³
         alt_box = ShippingBox.objects.create(

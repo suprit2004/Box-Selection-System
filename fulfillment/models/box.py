@@ -98,5 +98,5 @@ class ShippingBox(models.Model):
         return tuple(sorted([self.internal_length, self.internal_width, self.internal_height]))
 
     def __str__(self):
-        return f"{self.name} [{self.code}] - ${self.cost:.2f}"
+        return f"{self.name} [{self.code}] - ₹{self.cost:.2f}"
 

@@ -115,7 +115,7 @@
                                         <td class="small">{{ b.internal_length }} × {{ b.internal_width }} × {{ b.internal_height }} cm</td>
                                         <td class="small text-muted">{{ b.internal_volume|floatformat:1 }} cm³</td>
                                         <td class="small fw-semibold text-dark">{{ b.max_weight }} kg</td>
-                                        <td class="small fw-bold text-success fs-6">${{ b.cost|floatformat:2 }}</td>
+                                        <td class="small fw-bold text-success fs-6">₹{{ b.cost|floatformat:2 }}</td>
                                         <td>
                                             {% if b.is_active %}
                                                 <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>

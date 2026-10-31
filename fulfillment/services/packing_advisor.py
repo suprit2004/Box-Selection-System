@@ -20,7 +20,7 @@ class PackingAdvisor:
         """
         weight_margin = box.max_weight - total_weight
         return (
-            f"Selected {box.name} ({box.code}) at ${box.cost:.2f} as the lowest-cost option among "
+            f"Selected {box.name} ({box.code}) at ₹{box.cost:.2f} as the lowest-cost option among "
             f"{candidate_count} evaluated boxes. Accommodates all items with {fit_result.utilization_percentage:.1f}% "
             f"space utilization, leaving {fit_result.void_volume:,.1f} cm³ for protective dunnage. "
             f"Weight buffer remaining: {weight_margin:.3f} kg."

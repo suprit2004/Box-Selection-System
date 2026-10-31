@@ -194,7 +194,7 @@ class ViewsTest(TestCase):
         rec_response = self.client.get(reverse('order_recommendation', args=[order.id]))
         self.assertEqual(rec_response.status_code, 200)
         self.assertContains(rec_response, "Standard Box")
-        self.assertContains(rec_response, "$2.50")
+        self.assertContains(rec_response, "₹2.50")
 
     def test_order_list_view(self):
         order = Order.objects.create(status=OrderStatus.OPTIMIZED, recommended_box=self.box)

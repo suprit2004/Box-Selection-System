@@ -62,7 +62,7 @@
                                 <td class="small fw-semibold text-dark">{{ order.total_weight }} kg</td>
                                 <td class="small fw-bold text-success fs-6">
                                     {% if order.recommended_box %}
-                                        ${{ order.recommended_box.cost|floatformat:2 }}
+                                        ₹{{ order.recommended_box.cost|floatformat:2 }}
                                     {% else %}
                                         --
                                     {% endif %}

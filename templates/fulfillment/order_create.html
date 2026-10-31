@@ -6,11 +6,11 @@
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
         <h1 class="h3 fw-bold text-dark mb-1">Create Fulfillment Order</h1>
-        <p class="text-muted small mb-0">Select order items and quantities. The 3D packing engine will automatically find the lowest-cost suitable carton.</p>
+        <p class="text-muted small mb-0">Select order items and quantities. The 3D packing engine will find the lowest-cost suitable carton.</p>
     </div>
     {% if not products %}
         <a href="{% url 'seed_sample_data' %}" class="btn btn-success shadow-sm">
-            <i class="bi bi-lightning-charge-fill me-1"></i> Seed Demo Products & Boxes
+            <i class="bi bi-lightning-charge-fill me-1"></i> Seed Demo Products &amp; Boxes
         </a>
     {% endif %}
 </div>
@@ -18,16 +18,12 @@
 {% if not products %}
     <div class="alert alert-warning shadow-sm border-warning d-flex align-items-center justify-content-between p-4 mb-4">
         <div>
-            <h5 class="alert-heading fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> No active products in catalog</h5>
+            <h5 class="alert-heading fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>No active products in catalog</h5>
             <p class="mb-0 small">Before creating an order, please load sample products or add products manually.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{% url 'seed_sample_data' %}" class="btn btn-warning fw-semibold">
-                Load Demo Catalog (1-Click)
-            </a>
-            <a href="{% url 'product_list_create' %}" class="btn btn-outline-dark">
-                Add Product
-            </a>
+            <a href="{% url 'seed_sample_data' %}" class="btn btn-warning fw-semibold">Load Demo Catalog (1-Click)</a>
+            <a href="{% url 'product_list_create' %}" class="btn btn-outline-dark">Add Product</a>
         </div>
     </div>
 {% endif %}
@@ -40,27 +36,35 @@
                 <h5 class="card-title fw-bold text-dark mb-0 fs-6">
                     <i class="bi bi-cart-plus me-1 text-primary"></i> Order Line Items
                 </h5>
-                <span class="text-muted small">Select at least one product</span>
+                <span class="text-muted small">At least one product is required</span>
             </div>
             <div class="card-body">
                 <form method="post" id="orderForm" novalidate>
                     {% csrf_token %}
                     {{ formset.management_form }}
 
+                    <!-- Inline validation message shown when the user tries to remove the last row -->
+                    <div id="minRowWarning" class="alert alert-warning alert-dismissible py-2 px-3 mb-3 d-none" role="alert">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        At least one item row is required.
+                        <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="orderItemsTable">
+                        <table class="table table-bordered align-middle mb-2" id="orderItemsTable">
                             <thead class="table-light">
                                 <tr class="text-uppercase small text-muted">
-                                    <th style="width: 65%;">Product</th>
+                                    <th style="width: 60%;">Product</th>
                                     <th style="width: 25%;">Quantity</th>
-                                    <th style="width: 10%;" class="text-center">Action</th>
+                                    <th style="width: 15%;" class="text-center">Remove</th>
                                 </tr>
                             </thead>
                             <tbody id="formsetContainer">
+
                                 {% for form in formset %}
-                                    <tr class="formset-row">
+                                    <tr class="formset-row" data-form-index="{{ forloop.counter0 }}">
+                                        {{ form.id }}
                                         <td>
-                                            {{ form.id }}
                                             {{ form.product }}
                                             {% if form.product.errors %}
                                                 <div class="text-danger small mt-1">{{ form.product.errors.0 }}</div>
@@ -74,31 +78,32 @@
                                         </td>
                                         <td class="text-center">
                                             {% if form.instance.pk %}
-                                                <div class="form-check form-check-inline m-0">
+                                                <div class="form-check d-flex align-items-center justify-content-center gap-1">
                                                     {{ form.DELETE }}
-                                                    <label class="form-check-label small text-danger" for="{{ form.DELETE.id_for_label }}">
-                                                        Del
-                                                    </label>
+                                                    <label class="form-check-label small text-danger mb-0"
+                                                           for="{{ form.DELETE.id_for_label }}">Delete</label>
                                                 </div>
                                             {% else %}
-                                                <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row" title="Clear selection">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger btn-remove-row"
+                                                        title="Remove this row">
                                                     <i class="bi bi-x-lg"></i>
                                                 </button>
                                             {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
+
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="addMoreBtn">
-                            <i class="bi bi-plus-lg me-1"></i> Add Another Item Row
+                    <div class="d-flex justify-content-between align-items-center mt-2 pt-3 border-top">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addItemBtn">
+                            <i class="bi bi-plus-lg me-1"></i> Add Item Row
                         </button>
-                        
-                        <button type="submit" class="btn btn-primary px-4 shadow-sm" id="submitBtn">
-                            <i class="bi bi-cpu-fill me-1"></i> Optimize & Recommend Box →
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-cpu-fill me-1"></i> Optimize &amp; Recommend Box &rarr;
                         </button>
                     </div>
                 </form>
@@ -121,7 +126,9 @@
                             <div class="list-group-item py-2 px-3">
                                 <div class="fw-semibold text-dark small">{{ p.name }}</div>
                                 <div class="text-muted" style="font-size: 0.75rem;">
-                                    <span class="font-monospace text-secondary">{{ p.sku }}</span> • {{ p.length }}×{{ p.width }}×{{ p.height }} cm • <strong>{{ p.weight }} kg</strong>
+                                    <span class="font-monospace text-secondary">{{ p.sku }}</span>
+                                    &bull; {{ p.length }}&times;{{ p.width }}&times;{{ p.height }} cm
+                                    &bull; <strong>{{ p.weight }} kg</strong>
                                 </div>
                             </div>
                         {% endfor %}
@@ -134,71 +141,143 @@
 
         <div class="card shadow-sm border-primary-subtle bg-primary-subtle bg-opacity-10">
             <div class="card-body p-3">
-                <h6 class="fw-bold text-primary small mb-2"><i class="bi bi-shield-check me-1"></i> 3D Optimization Rules:</h6>
+                <h6 class="fw-bold text-primary small mb-2">
+                    <i class="bi bi-shield-check me-1"></i> 3D Optimization Rules:
+                </h6>
                 <ul class="list-unstyled text-muted small mb-0 lh-base">
-                    <li class="mb-1">✓ Fast-checks weight limits and bounding boxes</li>
-                    <li class="mb-1">✓ Evaluates all 6 orthogonal spatial rotations</li>
-                    <li class="mb-1">✓ Tests collision-free non-overlapping placement</li>
-                    <li>✓ Prioritizes the lowest-cost carton available</li>
+                    <li class="mb-1">&#10003; Fast-checks weight limits and bounding boxes</li>
+                    <li class="mb-1">&#10003; Evaluates all 6 orthogonal spatial rotations</li>
+                    <li class="mb-1">&#10003; Tests collision-free non-overlapping placement</li>
+                    <li>&#10003; Prioritizes the lowest-cost carton available</li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
+<!--
+    Empty form template used by JavaScript as a cloning source.
+    Django renders formset.empty_form with __prefix__ in every field name and id.
+    JavaScript replaces __prefix__ with the real next index before appending to the DOM.
+-->
+<template id="empty-form-template">
+    <tr class="formset-row">
+        {{ formset.empty_form.id }}
+        <td>
+            {{ formset.empty_form.product }}
+        </td>
+        <td>
+            {{ formset.empty_form.quantity }}
+        </td>
+        <td class="text-center">
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger btn-remove-row"
+                    title="Remove this row">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
-    // Minimal, robust JavaScript to add rows dynamically if needed
-    document.addEventListener('DOMContentLoaded', function () {
-        const addBtn = document.getElementById('addMoreBtn');
-        const container = document.getElementById('formsetContainer');
-        const totalForms = document.getElementById('id_items-TOTAL_FORMS');
+(function () {
+    'use strict';
 
-        // Clear row functionality
-        container.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-remove-row')) {
-                const row = e.target.closest('tr');
-                const select = row.querySelector('select');
-                const input = row.querySelector('input[type="number"]');
-                if (select) select.value = '';
-                if (input) input.value = '1';
-                // Only hide if there are multiple visible rows
-                const visibleRows = container.querySelectorAll('.formset-row:not([style*="display: none"])');
-                if (visibleRows.length > 1) {
-                    row.style.display = 'none';
-                }
-            }
+    const totalFormsInput = document.getElementById('id_items-TOTAL_FORMS');
+    const container       = document.getElementById('formsetContainer');
+    const addBtn          = document.getElementById('addItemBtn');
+    const emptyTemplate   = document.getElementById('empty-form-template');
+    const minRowWarning   = document.getElementById('minRowWarning');
+
+    if (!totalFormsInput || !container || !addBtn || !emptyTemplate) {
+        return;
+    }
+
+    function getTotalForms() {
+        return parseInt(totalFormsInput.value, 10);
+    }
+
+    function setTotalForms(n) {
+        totalFormsInput.value = n;
+    }
+
+    function addRow() {
+        const index = getTotalForms();
+        const clone = emptyTemplate.content.cloneNode(true);
+        const row   = clone.querySelector('tr');
+
+        row.innerHTML = row.innerHTML.replaceAll('__prefix__', String(index));
+
+        const qtyInput = row.querySelector('.quantity-input');
+        if (qtyInput) qtyInput.value = '1';
+
+        container.appendChild(row);
+        setTotalForms(index + 1);
+    }
+
+    function removeRow(row) {
+        const initialForms = parseInt(
+            document.getElementById('id_items-INITIAL_FORMS').value, 10
+        );
+        const allRows = Array.from(container.querySelectorAll('.formset-row'));
+        const rowIndex = allRows.indexOf(row);
+
+        if (rowIndex < initialForms) {
+            return;
+        }
+
+        row.remove();
+
+        const remainingRows = Array.from(container.querySelectorAll('.formset-row'));
+        remainingRows.slice(initialForms).forEach(function (extraRow, offset) {
+            reindexRow(extraRow, initialForms + offset);
         });
 
-        if (addBtn && totalForms) {
-            addBtn.addEventListener('click', function () {
-                const rows = container.querySelectorAll('.formset-row');
-                // Check if there is any hidden row to unhide
-                for (let r of rows) {
-                    if (r.style.display === 'none') {
-                        r.style.display = '';
-                        return;
-                    }
-                }
-                
-                // Otherwise clone the last row
-                const lastRow = rows[rows.length - 1];
-                const newRow = lastRow.cloneNode(true);
-                const currentCount = parseInt(totalForms.value, 10);
-                
-                newRow.style.display = '';
-                newRow.innerHTML = newRow.innerHTML.replaceAll(`-${currentCount - 1}-`, `-${currentCount}-`);
-                
-                const select = newRow.querySelector('select');
-                const input = newRow.querySelector('input[type="number"]');
-                if (select) select.value = '';
-                if (input) input.value = '1';
+        setTotalForms(getTotalForms() - 1);
+    }
 
-                container.appendChild(newRow);
-                totalForms.value = currentCount + 1;
+    function reindexRow(row, newIndex) {
+        ['name', 'id', 'for'].forEach(function (attr) {
+            row.querySelectorAll('[' + attr + ']').forEach(function (el) {
+                const val = el.getAttribute(attr);
+                if (val) {
+                    el.setAttribute(attr, val.replace(/items-(\d+)-/, 'items-' + newIndex + '-'));
+                }
             });
+        });
+    }
+
+    addBtn.addEventListener('click', addRow);
+
+    container.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-remove-row');
+        if (!btn) return;
+
+        const row         = btn.closest('tr.formset-row');
+        const visibleRows = container.querySelectorAll('.formset-row');
+
+        if (visibleRows.length <= 1) {
+            if (minRowWarning) {
+                minRowWarning.classList.remove('d-none');
+            }
+            return;
         }
+
+        if (minRowWarning) {
+            minRowWarning.classList.add('d-none');
+        }
+
+        removeRow(row);
     });
+
+    if (getTotalForms() === 0) {
+        addRow();
+    }
+
+}());
 </script>
 {% endblock %}
