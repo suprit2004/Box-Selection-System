@@ -3,180 +3,215 @@
 {% block title %}Recommendation for {{ order.order_number }} | Box Selection System{% endblock %}
 
 {% block content %}
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<!-- Top Header & Breadcrumbs -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
     <div>
-        <div class="flex items-center gap-3">
-            <h1 class="text-2xl font-bold text-slate-900">{{ order.order_number }}</h1>
-            {% if order.status == 'OPTIMIZED' %}
-                <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">
-                    ✓ BOX RECOMMENDED
+        <div class="d-flex align-items-center gap-2">
+            <h1 class="h3 fw-bold text-dark mb-0 font-monospace">{{ order.order_number }}</h1>
+            {% if order.status == 'OPTIMIZED' and order.recommended_box %}
+                <span class="badge badge-optimized fs-6 py-1 px-3">
+                    <i class="bi bi-check-circle-fill me-1"></i> Box Recommended
                 </span>
             {% else %}
-                <span class="px-3 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-full">
-                    ✕ UNPACKABLE IN SINGLE BOX
+                <span class="badge badge-unpackable fs-6 py-1 px-3">
+                    <i class="bi bi-x-circle-fill me-1"></i> No Box Accommodates Order
                 </span>
             {% endif %}
         </div>
-        <p class="text-xs text-slate-500 mt-1">Created {{ order.created_at|date:"M d, Y H:i" }}</p>
+        <p class="text-muted small mt-1 mb-0">Processed on {{ order.created_at|date:"F j, Y, H:i" }}</p>
     </div>
 
-    <div class="flex gap-2">
-        <a href="{% url 'order_create' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition">
-            + New Order
+    <div class="d-flex gap-2">
+        <a href="{% url 'order_create' %}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Create New Order
         </a>
-        <a href="{% url 'order_list' %}" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-lg transition">
-            View All Orders
+        <a href="{% url 'order_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-list-ul me-1"></i> Orders History
         </a>
     </div>
 </div>
 
-<!-- Main Recommendation Hero Card -->
+<!-- Recommendation Result Hero Display -->
 {% if order.status == 'OPTIMIZED' and order.recommended_box %}
-    <div class="bg-white border-2 border-emerald-500 rounded-2xl shadow-sm overflow-hidden mb-8">
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 text-white flex justify-between items-center">
+    <div class="card shadow-sm border-success border-2 mb-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-3 px-4 d-flex justify-content-between align-items-center">
             <div>
-                <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-100">Recommended Shipping Box</span>
-                <h2 class="text-2xl font-black mt-0.5">{{ order.recommended_box.name }} [{{ order.recommended_box.code }}]</h2>
+                <span class="text-uppercase small fw-bold tracking-wider text-white-50">Optimal Shipping Box</span>
+                <h2 class="h3 fw-bold mb-0 text-white mt-1">
+                    {{ order.recommended_box.name }}
+                    <span class="badge bg-light text-success font-monospace fs-6 ms-2">{{ order.recommended_box.code }}</span>
+                </h2>
             </div>
-            <div class="text-right">
-                <span class="text-xs text-emerald-100 uppercase tracking-wider block">Box Cost</span>
-                <span class="text-3xl font-black">${{ order.recommended_box.cost|floatformat:2 }}</span>
+            <div class="text-end">
+                <span class="text-uppercase small fw-bold text-white-50 d-block">Unit Cost</span>
+                <span class="h2 fw-bold text-white mb-0">${{ order.recommended_box.cost|floatformat:2 }}</span>
             </div>
         </div>
 
-        <div class="p-6">
-            <!-- Key Metrics Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Internal Dimensions</span>
-                    <p class="text-lg font-bold text-slate-800 mt-1">
-                        {{ order.recommended_box.internal_length }} × {{ order.recommended_box.internal_width }} × {{ order.recommended_box.internal_height }} <span class="text-xs font-normal text-slate-500">cm</span>
-                    </p>
+        <div class="card-body p-4">
+            <!-- 4 Key Logistics Metrics -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <span class="text-uppercase small fw-semibold text-muted d-block" style="font-size: 0.75rem;">Internal Dimensions</span>
+                        <div class="fs-5 fw-bold text-dark mt-1">
+                            {{ order.recommended_box.internal_length }} × {{ order.recommended_box.internal_width }} × {{ order.recommended_box.internal_height }} <span class="small fw-normal text-muted">cm</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Total Order Weight</span>
-                    <p class="text-lg font-bold text-slate-800 mt-1">
-                        {{ order.total_weight }} <span class="text-xs font-normal text-slate-500">kg</span>
-                    </p>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <span class="text-uppercase small fw-semibold text-muted d-block" style="font-size: 0.75rem;">Total Order Weight</span>
+                        <div class="fs-5 fw-bold text-dark mt-1">
+                            {{ order.total_weight }} <span class="small fw-normal text-muted">kg</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Max Weight Capacity</span>
-                    <p class="text-lg font-bold text-slate-800 mt-1">
-                        {{ order.recommended_box.max_weight }} <span class="text-xs font-normal text-slate-500">kg</span>
-                    </p>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <span class="text-uppercase small fw-semibold text-muted d-block" style="font-size: 0.75rem;">Max Weight Rating</span>
+                        <div class="fs-5 fw-bold text-dark mt-1">
+                            {{ order.recommended_box.max_weight }} <span class="small fw-normal text-muted">kg</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Space Utilization</span>
-                    <p class="text-lg font-bold text-slate-800 mt-1">
-                        {% if result.fit_details %}
-                            {{ result.fit_details.utilization_percentage }}%
-                        {% else %}
-                            --
-                        {% endif %}
-                    </p>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-3 border">
+                        <span class="text-uppercase small fw-semibold text-muted d-block" style="font-size: 0.75rem;">Space Utilization</span>
+                        <div class="fs-5 fw-bold text-dark mt-1">
+                            {% if result.fit_details %}
+                                {{ result.fit_details.utilization_percentage }}%
+                            {% else %}
+                                --
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Recommendation Reason Box -->
-            <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-5 mb-2">
-                <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-1">Reason for Selection</h3>
-                <p class="text-sm text-emerald-950 font-medium leading-relaxed">
+            <!-- Reason for Selection Callout -->
+            <div class="alert alert-success border-success-subtle bg-success-subtle bg-opacity-25 mb-0 p-3">
+                <h6 class="alert-heading fw-bold text-success-emphasis mb-1">
+                    <i class="bi bi-lightbulb-fill me-1"></i> Reason for Selection
+                </h6>
+                <p class="mb-0 text-success-emphasis small lh-base">
                     {{ order.packing_notes }}
                 </p>
             </div>
         </div>
     </div>
 {% else %}
-    <!-- Unpackable Error Card -->
-    <div class="bg-white border-2 border-rose-300 rounded-2xl shadow-sm p-6 mb-8">
-        <div class="flex items-start gap-4">
-            <span class="p-3 bg-rose-100 text-rose-700 text-2xl rounded-xl">⚠️</span>
-            <div>
-                <h2 class="text-xl font-bold text-rose-900">No Suitable Shipping Box in Stock</h2>
-                <p class="text-sm text-rose-800 mt-2 font-medium">
-                    {{ order.packing_notes }}
-                </p>
-                <div class="mt-4 pt-4 border-t border-rose-100 text-xs text-slate-600">
-                    Total Order Weight: <strong>{{ order.total_weight }} kg</strong> • Total Item Volume: <strong>{{ order.total_volume }} cm³</strong>
+    <!-- Unpackable Order Diagnosis Card -->
+    <div class="card shadow-sm border-danger border-2 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-start gap-3">
+                <div class="stat-card-icon bg-danger-subtle text-danger flex-shrink-0" style="width: 56px; height: 56px;">
+                    <i class="bi bi-shield-x fs-2"></i>
+                </div>
+                <div>
+                    <h4 class="h5 fw-bold text-danger mb-2">No Suitable Shipping Box in Stock</h4>
+                    <p class="text-dark fw-medium mb-3">
+                        {{ order.packing_notes }}
+                    </p>
+                    <div class="d-flex gap-4 small text-muted border-top pt-2">
+                        <div>Total Weight: <strong>{{ order.total_weight }} kg</strong></div>
+                        <div>Total Item Volume: <strong>{{ order.total_volume|floatformat:1 }} cm³</strong></div>
+                        <div>Action Required: <strong>Warehouse supervisor review / Split shipment</strong></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 {% endif %}
 
-<!-- Order Items & 3D Packing Coordinates Breakdown -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Detailed Order Items & 3D Placement Breakdown -->
+<div class="row g-4">
     <!-- Ordered Line Items -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-        <h3 class="text-base font-bold text-slate-900 mb-4">Ordered Products</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-                <thead>
-                    <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                        <th class="pb-3">Product</th>
-                        <th class="pb-3">Dimensions</th>
-                        <th class="pb-3">Unit Wt</th>
-                        <th class="pb-3">Qty</th>
-                        <th class="pb-3">Total Wt</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {% for item in order.items.all %}
-                        <tr>
-                            <td class="py-3 font-medium text-slate-800">
-                                {{ item.product.name }}
-                                <span class="block text-xs text-slate-400">{{ item.product.sku }}</span>
-                            </td>
-                            <td class="py-3 text-slate-600 text-xs">
-                                {{ item.product.length }}×{{ item.product.width }}×{{ item.product.height }} cm
-                            </td>
-                            <td class="py-3 text-slate-600 text-xs">{{ item.unit_weight }} kg</td>
-                            <td class="py-3 font-semibold text-slate-800">{{ item.quantity }}</td>
-                            <td class="py-3 font-medium text-slate-800">{{ item.line_weight }} kg</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="col-12 col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                    <i class="bi bi-basket2 me-1 text-primary"></i> Order Items ({{ order.items.count }})
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="text-uppercase small text-muted">
+                                <th>Product</th>
+                                <th>Dimensions</th>
+                                <th>Unit Wt</th>
+                                <th>Qty</th>
+                                <th>Total Wt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold text-dark small">{{ item.product.name }}</div>
+                                        <div class="text-muted font-monospace" style="font-size: 0.75rem;">{{ item.product.sku }}</div>
+                                    </td>
+                                    <td class="small">{{ item.product.length }}×{{ item.product.width }}×{{ item.product.height }} cm</td>
+                                    <td class="small text-muted">{{ item.unit_weight }} kg</td>
+                                    <td class="fw-bold small">{{ item.quantity }}</td>
+                                    <td class="fw-semibold text-dark small">{{ item.line_weight }} kg</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 3D Coordinates & Physical Orientation Breakdown -->
-    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-        <h3 class="text-base font-bold text-slate-900 mb-1">Physical 3D Placement Coordinates</h3>
-        <p class="text-xs text-slate-500 mb-4">Verified coordinate anchors and spatial rotations inside the container</p>
-
-        {% if result.fit_details and result.fit_details.placed_items %}
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="border-b border-slate-200 font-semibold text-slate-500 uppercase">
-                            <th class="pb-2">Item</th>
-                            <th class="pb-2">Origin (X, Y, Z)</th>
-                            <th class="pb-2">Orientation (dX, dY, dZ)</th>
-                            <th class="pb-2">Extent (X2, Y2, Z2)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 font-mono">
-                        {% for placed in result.fit_details.placed_items %}
-                            <tr>
-                                <td class="py-2.5 font-sans font-medium text-slate-800">{{ placed.sku }}</td>
-                                <td class="py-2.5 text-blue-700">({{ placed.x }}, {{ placed.y }}, {{ placed.z }})</td>
-                                <td class="py-2.5 text-slate-700">{{ placed.dx }} × {{ placed.dy }} × {{ placed.dz }}</td>
-                                <td class="py-2.5 text-emerald-700">({{ placed.x2 }}, {{ placed.y2 }}, {{ placed.z2 }})</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- 3D Physical Coordinates Breakdown -->
+    <div class="col-12 col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                    <i class="bi bi-box me-1 text-primary"></i> 3D Coordinate Placement Verification
+                </h5>
+                <span class="badge bg-secondary-subtle text-secondary small">Collision-free</span>
             </div>
-        {% else %}
-            <div class="p-4 bg-slate-50 rounded-lg text-xs text-slate-500 text-center">
-                No 3D placement coordinates available (order could not be packed).
+            <div class="card-body p-0">
+                {% if result.fit_details and result.fit_details.placed_items %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 font-monospace small">
+                            <thead class="table-light">
+                                <tr class="text-uppercase text-muted" style="font-size: 0.75rem;">
+                                    <th>Item SKU</th>
+                                    <th>Anchor Point (X, Y, Z)</th>
+                                    <th>Orientation (dX, dY, dZ)</th>
+                                    <th>Bounding Extent (X2, Y2, Z2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for placed in result.fit_details.placed_items %}
+                                    <tr>
+                                        <td class="fw-bold font-sans text-dark">{{ placed.sku }}</td>
+                                        <td class="text-primary">({{ placed.x }}, {{ placed.y }}, {{ placed.z }})</td>
+                                        <td class="text-dark">{{ placed.dx }} × {{ placed.dy }} × {{ placed.dz }}</td>
+                                        <td class="text-success">({{ placed.x2 }}, {{ placed.y2 }}, {{ placed.z2 }})</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-5 text-center text-muted small">
+                        No 3D placement coordinates available because no single box accommodated this order.
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+            <div class="card-footer bg-light p-3 small text-muted">
+                <i class="bi bi-info-circle me-1"></i> Origin (0,0,0) represents the bottom-back-left corner of the carton's interior.
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
-

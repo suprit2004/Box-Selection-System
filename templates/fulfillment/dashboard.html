@@ -1,0 +1,217 @@
+{% extends "fulfillment/base.html" %}
+
+{% block title %}Warehouse Dashboard | Box Selection System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Warehouse Packaging Dashboard</h1>
+        <p class="text-muted small mb-0">Overview of inventory cartons, catalog products, and 3D box selection metrics.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'order_create' %}" class="btn btn-primary d-inline-flex align-items-center shadow-sm">
+            <i class="bi bi-box-seam me-2"></i> + Create Order
+        </a>
+        <a href="{% url 'box_list_create' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-plus-lg me-1"></i> Add Box
+        </a>
+    </div>
+</div>
+
+<!-- KPI Metric Cards Grid -->
+<div class="row g-3 mb-4">
+    <!-- Products Metric -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Catalog Products</span>
+                    <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ total_products }}</h2>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2">
+                        {{ active_products }} active for shipping
+                    </span>
+                </div>
+                <div class="stat-card-icon bg-primary-subtle text-primary">
+                    <i class="bi bi-tags-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boxes Metric -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Shipping Boxes</span>
+                    <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ total_boxes }}</h2>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle mt-2">
+                        {{ active_boxes }} in inventory
+                    </span>
+                </div>
+                <div class="stat-card-icon bg-success-subtle text-success">
+                    <i class="bi bi-box2-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Metric -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Total Orders</span>
+                    <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ total_orders }}</h2>
+                    <span class="text-muted small mt-2 d-block">
+                        {{ optimized_orders }} optimized, {{ unpackable_orders }} unboxed
+                    </span>
+                </div>
+                <div class="stat-card-icon bg-info-subtle text-info">
+                    <i class="bi bi-truck"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optimization Rate Metric -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-uppercase fw-semibold text-muted" style="font-size: 0.75rem;">Fit Success Rate</span>
+                    <h2 class="h2 fw-bold text-dark mb-0 mt-1">{{ success_rate }}%</h2>
+                    <div class="progress mt-2" style="height: 6px; width: 120px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ success_rate }}%;"></div>
+                    </div>
+                </div>
+                <div class="stat-card-icon bg-warning-subtle text-warning-emphasis">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Box Recommendations Table -->
+    <div class="col-12 col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">Recent Box Recommendations</h5>
+                <a href="{% url 'order_list' %}" class="btn btn-sm btn-outline-primary">
+                    View All Orders →
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="text-uppercase small text-muted">
+                                    <th>Order #</th>
+                                    <th>Status</th>
+                                    <th>Recommended Box</th>
+                                    <th>Weight</th>
+                                    <th>Box Cost</th>
+                                    <th>Created</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                    <tr>
+                                        <td class="fw-bold font-monospace small">{{ order.order_number }}</td>
+                                        <td>
+                                            {% if order.status == 'OPTIMIZED' %}
+                                                <span class="badge badge-optimized">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Box Selected
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-unpackable">
+                                                    <i class="bi bi-x-circle-fill me-1"></i> Unpackable
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if order.recommended_box %}
+                                                <span class="fw-semibold text-dark">{{ order.recommended_box.name }}</span>
+                                                <span class="badge bg-secondary-subtle text-secondary font-monospace ms-1">{{ order.recommended_box.code }}</span>
+                                            {% else %}
+                                                <span class="text-muted fst-italic">None (Split needed)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="small">{{ order.total_weight }} kg</td>
+                                        <td class="fw-bold text-success">
+                                            {% if order.recommended_box %}
+                                                ${{ order.recommended_box.cost|floatformat:2 }}
+                                            {% else %}
+                                                --
+                                            {% endif %}
+                                        </td>
+                                        <td class="small text-muted">{{ order.created_at|date:"M d, H:i" }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'order_recommendation' order.id %}" class="btn btn-sm btn-light border text-primary">
+                                                Inspect <i class="bi bi-arrow-right-short"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-inbox fs-1 text-secondary"></i>
+                        <p class="mt-2 mb-3">No orders recorded yet.</p>
+                        <a href="{% url 'order_create' %}" class="btn btn-sm btn-primary">
+                            Create First Order
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Box Inventory Snapshot -->
+    <div class="col-12 col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">Stock Cartons Snapshot</h5>
+                <a href="{% url 'box_list_create' %}" class="btn btn-sm btn-link text-decoration-none">
+                    Manage Boxes
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if stock_boxes %}
+                    <div class="list-group list-group-flush">
+                        {% for box in stock_boxes %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <div class="fw-semibold text-dark">{{ box.name }}</div>
+                                    <div class="text-muted small">
+                                        {{ box.internal_length }}×{{ box.internal_width }}×{{ box.internal_height }} cm • Max {{ box.max_weight }} kg
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fs-6 fw-bold text-success">${{ box.cost|floatformat:2 }}</span>
+                                    <div class="text-muted font-monospace" style="font-size: 0.75rem;">{{ box.code }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="p-4 text-center text-muted small">
+                        No shipping boxes defined.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-light p-3 small text-muted">
+                <i class="bi bi-info-circle me-1"></i> Cartons are prioritized by lowest cost, then smallest void space.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

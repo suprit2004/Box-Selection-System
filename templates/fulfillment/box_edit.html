@@ -1,0 +1,85 @@
+{% extends "fulfillment/base.html" %}
+
+{% block title %}Edit Shipping Box: {{ box.name }} | Box Selection System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                        <i class="bi bi-pencil-square me-1 text-primary"></i> Edit Shipping Box
+                    </h5>
+                    <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ box.code }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Box Code / Identifier</label>
+                        {{ form.code }}
+                        {% if form.code.errors %}<div class="text-danger small mt-1">{{ form.code.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Box Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Int. Length</label>
+                            {{ form.internal_length }}
+                            {% if form.internal_length.errors %}<div class="text-danger small mt-1">{{ form.internal_length.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Int. Width</label>
+                            {{ form.internal_width }}
+                            {% if form.internal_width.errors %}<div class="text-danger small mt-1">{{ form.internal_width.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Int. Height</label>
+                            {{ form.internal_height }}
+                            {% if form.internal_height.errors %}<div class="text-danger small mt-1">{{ form.internal_height.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-secondary">Max Weight (kg)</label>
+                            {{ form.max_weight }}
+                            {% if form.max_weight.errors %}<div class="text-danger small mt-1">{{ form.max_weight.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-secondary">Unit Cost ($)</label>
+                            {{ form.cost }}
+                            {% if form.cost.errors %}<div class="text-danger small mt-1">{{ form.cost.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label small fw-medium" for="{{ form.is_active.id_for_label }}">
+                            Active for packaging recommendations
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <a href="{% url 'box_list_create' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-check2 me-1"></i> Update Shipping Box
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,78 @@
+{% extends "fulfillment/base.html" %}
+
+{% block title %}Edit Product: {{ product.name }} | Box Selection System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                        <i class="bi bi-pencil-square me-1 text-primary"></i> Edit Product
+                    </h5>
+                    <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ product.sku }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">SKU / Code</label>
+                        {{ form.sku }}
+                        {% if form.sku.errors %}<div class="text-danger small mt-1">{{ form.sku.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Product Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Length (cm)</label>
+                            {{ form.length }}
+                            {% if form.length.errors %}<div class="text-danger small mt-1">{{ form.length.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Width (cm)</label>
+                            {{ form.width }}
+                            {% if form.width.errors %}<div class="text-danger small mt-1">{{ form.width.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Height (cm)</label>
+                            {{ form.height }}
+                            {% if form.height.errors %}<div class="text-danger small mt-1">{{ form.height.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Unit Weight (kg)</label>
+                        {{ form.weight }}
+                        {% if form.weight.errors %}<div class="text-danger small mt-1">{{ form.weight.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="form-check mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label small fw-medium" for="{{ form.is_active.id_for_label }}">
+                            Active for shipping orders
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <a href="{% url 'product_list_create' %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="bi bi-check2 me-1"></i> Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

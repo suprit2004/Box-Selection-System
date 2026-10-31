@@ -4,97 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AI-Assisted Box Selection System{% endblock %}</title>
-    <!-- Modern Tailwind CSS via CDN (zero build step needed) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        .form-input, .form-select {
-            width: 100%;
-            border-radius: 0.375rem;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            background-color: #ffffff;
-            transition: border-color 0.15s ease-in-out;
+        :root {
+            --brand-primary: #1e3a8a;
+            --brand-secondary: #0f172a;
+            --brand-accent: #2563eb;
+            --bg-canvas: #f8fafc;
         }
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        body {
+            background-color: var(--bg-canvas);
+            color: #334155;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .form-checkbox {
-            height: 1.25rem;
-            width: 1.25rem;
-            color: #2563eb;
-            border-radius: 0.25rem;
-            border: 1px solid #d1d5db;
+        .navbar-brand-badge {
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .table > :not(caption) > * > * {
+            padding: 0.75rem 1rem;
+        }
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .badge-optimized {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .badge-unpackable {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
         }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body>
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center space-x-3">
-                    <span class="p-2 bg-blue-600 text-white rounded-lg font-bold text-lg shadow-sm">📦</span>
-                    <div>
-                        <a href="{% url 'home' %}" class="font-extrabold text-slate-900 text-lg tracking-tight hover:text-blue-600">
-                            Box Selection System
+    <!-- Main Navigation Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" style="background-color: #0f172a;">
+        <div class="container-xl">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{% url 'dashboard' %}">
+                <span class="fs-4">📦</span>
+                <span>Box Selection System</span>
+                <span class="navbar-brand-badge text-light d-none d-sm-inline">Warehouse AI</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#warehouseNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="warehouseNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active fw-semibold text-white{% endif %}" href="{% url 'dashboard' %}">
+                            <i class="bi bi-grid-1x2 me-1"></i> Dashboard
                         </a>
-                        <span class="hidden md:inline-block ml-2 text-xs font-semibold px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
-                            Warehouse AI
-                        </span>
-                    </div>
-                </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'order_create' %}active fw-semibold text-white{% endif %}" href="{% url 'order_create' %}">
+                            <i class="bi bi-plus-circle me-1"></i> Create Order
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'order_list' %}active fw-semibold text-white{% endif %}" href="{% url 'order_list' %}">
+                            <i class="bi bi-receipt me-1"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'box' in request.resolver_match.url_name %}active fw-semibold text-white{% endif %}" href="{% url 'box_list_create' %}">
+                            <i class="bi bi-box me-1"></i> Shipping Boxes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'product' in request.resolver_match.url_name %}active fw-semibold text-white{% endif %}" href="{% url 'product_list_create' %}">
+                            <i class="bi bi-tag me-1"></i> Products
+                        </a>
+                    </li>
+                </ul>
 
-                <!-- Nav links -->
-                <nav class="flex items-center space-x-1 sm:space-x-3">
-                    <a href="{% url 'order_create' %}" class="px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition">
-                        + New Order
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{% url 'seed_sample_data' %}" class="btn btn-sm btn-outline-success border-success text-success-emphasis bg-success-subtle fw-medium" title="Populate standard demo catalog">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Load Demo Data
                     </a>
-                    <a href="{% url 'order_list' %}" class="px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition">
-                        Orders
+                    <a href="/admin/" target="_blank" class="btn btn-sm btn-outline-light" title="Django Admin Console">
+                        Admin <i class="bi bi-box-arrow-up-right ms-1"></i>
                     </a>
-                    <a href="{% url 'box_list_create' %}" class="px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition">
-                        Boxes
-                    </a>
-                    <a href="{% url 'product_list_create' %}" class="px-3 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-100 rounded-md transition">
-                        Products
-                    </a>
-                    <a href="{% url 'seed_sample_data' %}" class="hidden sm:inline-flex items-center px-3 py-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-md transition">
-                        ⚡ Load Sample Data
-                    </a>
-                    <a href="/admin/" target="_blank" class="px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 rounded-md">
-                        Admin ↗
-                    </a>
-                </nav>
+                </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Global Alerts & Messages -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+    <!-- Global Notifications & Alert Messages -->
+    <div class="container-xl mt-3">
         {% if messages %}
             {% for message in messages %}
-                <div class="p-4 mb-3 rounded-lg border text-sm font-medium flex items-center justify-between {% if message.tags == 'error' %}bg-rose-50 border-rose-200 text-rose-800{% elif message.tags == 'warning' %}bg-amber-50 border-amber-200 text-amber-800{% elif message.tags == 'info' %}bg-blue-50 border-blue-200 text-blue-800{% else %}bg-emerald-50 border-emerald-200 text-emerald-800{% endif %}">
-                    <span>{{ message }}</span>
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        {% if message.tags == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="bi bi-exclamation-circle-fill fs-5"></i>
+                        {% else %}
+                            <i class="bi bi-check-circle-fill fs-5"></i>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}
     </div>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+    <!-- Main View Content -->
+    <main class="container-xl py-4 flex-grow-1">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-        AI-Assisted Box Selection System • Python / Django 3D Bin Packing Engine
+    <footer class="bg-white border-top py-3 mt-auto text-muted small">
+        <div class="container-xl text-center">
+            AI-Assisted Box Selection System • Python & Django 3D Bin Packing Optimization
+        </div>
     </footer>
 
+    <!-- Bootstrap 5.3 Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
-

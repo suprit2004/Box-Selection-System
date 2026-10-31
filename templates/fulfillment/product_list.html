@@ -3,123 +3,146 @@
 {% block title %}Product Catalog | Box Selection System{% endblock %}
 
 {% block content %}
-<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="text-2xl font-bold text-slate-900">Product Catalog</h1>
-        <p class="text-sm text-slate-500 mt-1">Manage physical product dimensions and weights for shipping calculations.</p>
+        <h1 class="h3 fw-bold text-dark mb-1">Product Catalog</h1>
+        <p class="text-muted small mb-0">Manage physical dimensions and unit weights of shippable catalog products.</p>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="row g-4">
     <!-- Add Product Form -->
-    <div class="lg:col-span-1">
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 sticky top-24">
-            <h2 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                + Add New Product
-            </h2>
-            <form method="post" class="space-y-4">
-                {% csrf_token %}
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">SKU</label>
-                    {{ form.sku }}
-                    {% if form.sku.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.sku.errors.0 }}</p>{% endif %}
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Product Name</label>
-                    {{ form.name }}
-                    {% if form.name.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.name.errors.0 }}</p>{% endif %}
-                </div>
-
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Length (cm)</label>
-                        {{ form.length }}
-                        {% if form.length.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.length.errors.0 }}</p>{% endif %}
+    <div class="col-12 col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top: 80px;">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                    <i class="bi bi-plus-circle me-1 text-primary"></i> Add New Product
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">SKU / Code</label>
+                        {{ form.sku }}
+                        {% if form.sku.errors %}
+                            <div class="text-danger small mt-1">{{ form.sku.errors.0 }}</div>
+                        {% endif %}
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Width (cm)</label>
-                        {{ form.width }}
-                        {% if form.width.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.width.errors.0 }}</p>{% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Product Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                        {% endif %}
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Height (cm)</label>
-                        {{ form.height }}
-                        {% if form.height.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.height.errors.0 }}</p>{% endif %}
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Length (cm)</label>
+                            {{ form.length }}
+                            {% if form.length.errors %}<div class="text-danger small mt-1">{{ form.length.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Width (cm)</label>
+                            {{ form.width }}
+                            {% if form.width.errors %}<div class="text-danger small mt-1">{{ form.width.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-semibold text-secondary">Height (cm)</label>
+                            {{ form.height }}
+                            {% if form.height.errors %}<div class="text-danger small mt-1">{{ form.height.errors.0 }}</div>{% endif %}
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Weight (kg)</label>
-                    {{ form.weight }}
-                    {% if form.weight.errors %}<p class="text-xs text-rose-600 mt-1">{{ form.weight.errors.0 }}</p>{% endif %}
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Unit Weight (kg)</label>
+                        {{ form.weight }}
+                        {% if form.weight.errors %}
+                            <div class="text-danger small mt-1">{{ form.weight.errors.0 }}</div>
+                        {% endif %}
+                    </div>
 
-                <div class="flex items-center gap-2 pt-2">
-                    {{ form.is_active }}
-                    <label class="text-xs font-semibold text-slate-700">Active for shipping</label>
-                </div>
+                    <div class="form-check mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label small fw-medium" for="{{ form.is_active.id_for_label }}">
+                            Active for shipping orders
+                        </label>
+                    </div>
 
-                <button type="submit" class="w-full mt-4 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
-                    Save Product
-                </button>
-            </form>
+                    <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                        <i class="bi bi-check2-circle me-1"></i> Save Product
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Products Table -->
-    <div class="lg:col-span-2">
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Catalog Items ({{ products.count }})</h3>
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold text-dark mb-0 fs-6">
+                    Catalog Items <span class="badge bg-secondary-subtle text-secondary ms-1">{{ products.count }}</span>
+                </h5>
             </div>
-            {% if products %}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                                <th class="py-3 px-4">Product / SKU</th>
-                                <th class="py-3 px-4">Dimensions (L×W×H)</th>
-                                <th class="py-3 px-4">Volume</th>
-                                <th class="py-3 px-4">Weight</th>
-                                <th class="py-3 px-4">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            {% for p in products %}
-                                <tr class="hover:bg-slate-50/60 transition">
-                                    <td class="py-3 px-4">
-                                        <div class="font-semibold text-slate-800">{{ p.name }}</div>
-                                        <div class="text-xs text-slate-400 font-mono">{{ p.sku }}</div>
-                                    </td>
-                                    <td class="py-3 px-4 text-xs font-medium text-slate-700">
-                                        {{ p.length }} × {{ p.width }} × {{ p.height }} cm
-                                    </td>
-                                    <td class="py-3 px-4 text-xs text-slate-500">
-                                        {{ p.volume|floatformat:1 }} cm³
-                                    </td>
-                                    <td class="py-3 px-4 text-xs font-semibold text-slate-800">
-                                        {{ p.weight }} kg
-                                    </td>
-                                    <td class="py-3 px-4">
-                                        {% if p.is_active %}
-                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-xs rounded-full font-semibold">Active</span>
-                                        {% else %}
-                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs rounded-full">Inactive</span>
-                                        {% endif %}
-                                    </td>
+            <div class="card-body p-0">
+                {% if products %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="text-uppercase small text-muted">
+                                    <th>Product / SKU</th>
+                                    <th>Dimensions (L×W×H)</th>
+                                    <th>Volume</th>
+                                    <th>Weight</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <div class="p-8 text-center text-slate-400 text-xs">
-                    No products added yet. Add one using the form on the left or click "Load Sample Data".
-                </div>
-            {% endif %}
+                            </thead>
+                            <tbody>
+                                {% for p in products %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark">{{ p.name }}</div>
+                                            <div class="text-muted small font-monospace">{{ p.sku }}</div>
+                                        </td>
+                                        <td class="small">{{ p.length }} × {{ p.width }} × {{ p.height }} cm</td>
+                                        <td class="small text-muted">{{ p.volume|floatformat:1 }} cm³</td>
+                                        <td class="small fw-semibold text-dark">{{ p.weight }} kg</td>
+                                        <td>
+                                            {% if p.is_active %}
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'product_edit' p.pk %}" class="btn btn-outline-secondary" title="Edit Product">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'product_delete' p.pk %}" class="btn btn-outline-danger" title="Delete Product">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-tags fs-1 text-secondary"></i>
+                        <p class="mt-2 mb-0">No products in catalog yet.</p>
+                        <p class="small text-muted">Add your first product using the form or click "Load Demo Data" above.</p>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
