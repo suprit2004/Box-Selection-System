@@ -2,7 +2,7 @@
 
 **Project:** AI-Assisted Box Selection System  
 **Framework:** Python 3.14 / Django 6.1  
-**Author / Candidate:** [Candidate to fill in: Your Name]  
+**Author / Candidate:** Suprit Bagalkoti  
 **Date:** October 31, 2026  
 
 ---
